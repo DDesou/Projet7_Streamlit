@@ -127,8 +127,8 @@ def kde_fig(id: int, Feature: str):
         x0 = np.array(eval(response.content)["feat0"])
         x1 = np.array(eval(response.content)["feat1"])
         fig = go.Figure()
-        fig.add_trace(go.Violin(x=x0, line_color=rouge, name='Classe 0 (solvable)', y0=0, opacity=0.4))
-        fig.add_trace(go.Violin(x=x1, line_color=bleu, name= 'Classe 1 (insolvable)', y0=0, opacity=0.4))
+        fig.add_trace(go.Violin(x=x0, line_color=rouge, name='Classe 1 (non solvable)', y0=0, opacity=0.4))
+        fig.add_trace(go.Violin(x=x1, line_color=bleu, name= 'Classe 0 (solvable)', y0=0, opacity=0.4))
 
         fig.update_traces(orientation='h', side='positive', meanline_visible=True)
         fig.update_layout(xaxis_showgrid=False, xaxis_zeroline=False)   
