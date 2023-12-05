@@ -47,7 +47,7 @@ def host(local:bool):
         HOST_ = 'https://basicwebappvl.azurewebsites.net/' #Azure 
     return HOST_
 
-HOST = host(local=True)
+HOST = host(local=False)
 
 #GET LIST OF IDS
 def get_ids():    
