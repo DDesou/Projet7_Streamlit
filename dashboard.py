@@ -47,7 +47,7 @@ def host(local:bool):
         HOST_ = 'https://basicwebappvl.azurewebsites.net/' #Azure 
     return HOST_
 
-HOST = host(local=False)
+HOST = host(local=True)
 
 #GET LIST OF IDS
 def get_ids():    
@@ -84,6 +84,17 @@ def get_json(id:int):
     except requests.RequestException as e:
         print(f"Error fetching data from API: {e}")
 
+#GET DF_CLIENT
+def get_test(id:int):    
+    try:
+        response = requests.get(f'{HOST}/get_test?param_name={id}', timeout=80)
+        response.raise_for_status()  # Check for HTTP errors
+        test = eval(response.content)['data']
+        return test
+    except requests.RequestException as e:
+        print(f"Error fetching data from API: {e}")
+
+
 #Get the prediction
 def get_prediction(id_client: int):
     json_client = get_json(id_client)
@@ -114,8 +125,8 @@ def gauge(var, var2):
 
 
 def kde_fig(id: int, Feature: str):
-    json_client = json.loads(get_json(id))
-    df = pd.Series(json_client).to_frame().transpose().to_dict()
+    test = json.loads(get_test(id))
+    df = pd.Series(test).to_frame().transpose().to_dict()
     #print(df)
     x = df[Feature][0]
     print(x)
@@ -162,7 +173,7 @@ def get_shap(id_client: int):
         explanation = shap.Explanation(values=shap_values, 
                                        feature_names = shap_features, base_values = shap_base,
                                        data = shap_data)
-        fig = st_shap(shap.plots.waterfall(explanation[0], max_display=8))
+        fig = st_shap(shap.plots.bar(explanation[0], max_display=10))
         return fig
     except requests.RequestException as e:
         print(f"Error fetching prediction from API: {e}")
@@ -192,20 +203,41 @@ with col1:
 with col2:
     st.plotly_chart(gauge(ID, get_prediction(ID)), use_container_width=True)
 
-col1, col2, col3 = st.columns([2, 5, 2])
+
+col1, col2 = st.columns([2, 7])
 with col1:
 # Selectbox
     feature = st.selectbox('Sélection de la feature', features)
 
 with col2:
-    st.write(' ')
-
-with col3:
-    st.write(f'SHAP values du client n°{str(ID)}')
-
-col1, col2 = st.columns([1, 1])
-with col1:
     st.plotly_chart(kde_fig(ID, feature), use_container_width=True)
 
-with col2:
-    get_shap(ID)
+
+st.write(f'SHAP values du client n°{str(ID)}')
+
+get_shap(ID)
+
+
+
+
+
+
+
+
+#col1, col2, col3 = st.columns([2, 5, 2])
+#with col1:
+# Selectbox
+ #   feature = st.selectbox('Sélection de la feature', features)
+
+#with col2:
+ #   st.write(' ')
+
+#with col3:
+ #   st.write(f'SHAP values du client n°{str(ID)}')
+
+#col1, col2 = st.columns([1, 1])
+#with col1:
+ #   st.plotly_chart(kde_fig(ID, feature), use_container_width=True)
+
+#with col2:
+ #   get_shap(ID)
